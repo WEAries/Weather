@@ -2,6 +2,7 @@ package com.coolweather.android;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,9 +25,6 @@ import com.coolweather.android.util.Utility;
 
 import org.jetbrains.annotations.NotNull;
 import org.litepal.LitePal;
-import org.litepal.crud.LitePalSupport;
-import org.w3c.dom.Text;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -107,7 +105,7 @@ public class ChooseAreaFragment extends Fragment{
             listView.setSelection(0);
             currentLevel = LEVEL_PROVINCE;
         }else {
-            String address = "https://guolin.tech/api/china";
+            String address = "http://guolin.tech/api/china";
             queryFromServer(address,"province");
         }
     }
@@ -125,7 +123,7 @@ public class ChooseAreaFragment extends Fragment{
             currentLevel = LEVEL_CITY;
         }else{
             int provinceCode = selectedProvince.getProvinceCode();
-            String address = "http://guolin.tech/api/china"+provinceCode;
+            String address = "http://guolin.tech/api/china/"+provinceCode;
             queryFromServer(address,"city");
         }
     }
@@ -152,17 +150,6 @@ public class ChooseAreaFragment extends Fragment{
         showProgressDialog();
         HttpUtil.sendOkHttpRequest(address, new Callback() {
             @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        closeProgressDialog();
-                        Toast.makeText(getContext(),"加载失败",Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-
-            @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 String responseText = response.body().string();
                 boolean result = false;
@@ -188,6 +175,16 @@ public class ChooseAreaFragment extends Fragment{
                         }
                     });
                 }
+            }
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        closeProgressDialog();
+                        Toast.makeText(getContext(),"加载失败",Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
     }
